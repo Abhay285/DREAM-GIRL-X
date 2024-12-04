@@ -248,4 +248,96 @@ async def ddl_call_back(client, query):
                     duration=duration,
                     length=width,
                     thuly_to_message_id=message_idx,
-  
+                    promb=thumbnail,
+                    repgress=progress_for_pyrogram,
+                    progress_args=(
+                        script.LAZY_UPLOAD_START.format(custom_file_name),
+                        query.message,
+                        start_time
+                    )
+                )
+                await lazy_sticker04.delete()
+            else:
+                logger.info("Did this happen? :\\")
+            end_two = datetime.now()
+            try:
+                os.remove(download_directory)
+                os.remove(thumb_image_path)
+            except:
+                pass
+            time_taken_for_download = (end_one - start).seconds
+            time_taken_for_upload = (end_two - end_one).seconds
+            await query.edit_message_text(
+                text=script.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(time_taken_for_download, time_taken_for_upload, youtube_dl_url, namee, custom_file_name, sizee ),
+                disable_web_page_preview=True
+            )
+    else:
+        await query.edit_message_text(
+            text=script.NO_VOID_FORMAT_FOUND.format("Incorrect Link"),
+            disable_web_page_preview=True
+        )
+
+async def download_coroutine(bot, session, custom_file_name, url, file_name, chat_id, message_id, start):
+    downloaded = 0
+    display_message = ""
+    async with session.get(url, timeout=PROCESS_MAX_TIMEOUT) as response:
+        total_length = int(response.headers["Content-Length"])
+        content_type = response.headers["Content-Type"]
+        xLAZY_BAAPUx_path = urlparse(url).path
+        xLAZY_BAAPUx_u_name = os.path.basename(xLAZY_BAAPUx_path)
+        if "text" in content_type and total_length < 500:
+            return await response.release()
+        await bot.edit_message_text(
+            chat_id,
+            message_id,
+            text=""""**ღ♡ ɪɴɪᴛɪᴀᴛɪɴɢ ʟᴀᴢʏ ᴄᴏɴꜱᴛʀᴜᴄᴛɪᴏɴ ♡♪** \n⬇️⏬ `{}`\n🧬**ѕιzє:**`{}`
+            """.format(xLAZY_BAAPUx_u_name, humanbytes(total_length))
+        )
+        with open(file_name, "wb") as f_handle:
+            while True:
+                chunk = await response.content.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                f_handle.write(chunk)
+                downloaded += CHUNK_SIZE
+                now = time.time()
+                diff = now - start
+                xLAZY_BAAPUx_path = urlparse(url).path
+                xLAZY_BAAPUx_u_name = os.path.basename(xLAZY_BAAPUx_path)
+                if round(diff % 5.00) == 0 or downloaded == total_length:
+                    percentage = downloaded * 100 / total_length
+                    speed = downloaded / diff
+                    elapsed_time = round(diff) * 1000
+                    time_to_completion = round(
+                        (total_length - downloaded) / speed) * 1000
+                    estimated_total_time = elapsed_time + time_to_completion
+                    xxLAZY_BAPUXX_total_size = humanbytes(total_length)
+                    tp = round(percentage, 2)
+                    xxLAZY_BAPUXX_estimated_total_time = TimeFormatter(milliseconds=estimated_total_time)
+                    template_name = custom_file_name if custom_file_name else "**⚠ You haven't given any custom name...**"
+
+                    xLDx = f"**ღ♡ ʀᴜɴɴɪɴɢ ʟᴀᴢʏ ᴄᴏɴꜱᴛʀᴜᴄᴛɪᴏɴ ♡♪**\n**ᵉⁿʲᵒʸ ˢᵘᵖᵉʳᶠᵃˢᵗ ᵈᵒʷⁿˡᵒᵈ ᵇʸ [ᴸᵃᶻʸᴰᵉᵛᵉˡᵒᵖᵉʳʳ](https://t.me/LazyDeveloperr)◔_◔** \n\n**░░✩ 📂𝐎𝐑𝐆 𝐅𝐈𝐋𝐄𝐍𝐀𝐌𝐄 ✩ **\n<code>{xLAZY_BAAPUx_u_name}</code>\n\n**░░✩ 📝𝐍𝐄𝐖 𝐍𝐀𝐌𝐄 ✩ **\n<code>{template_name}</code>\n\n ☼﹍︿﹍ⲯ﹍︿﹍﹍︿﹍ⲯ﹍︿﹍☼\n⚡️**Done:{tp}**%| 🧬ѕιzє: {xxLAZY_BAPUXX_total_size}"
+                    progress = "{0}{1}".format(
+                        ''.join(["█" for i in range(math.floor(percentage / 5))]),
+                        ''.join(["░" for i in range(20 - math.floor(percentage / 5))]))
+                    tmp = xLDx + "\n" + progress + script.PROGRESS_BAR.format( 
+                        round(percentage, 2),
+                        humanbytes(downloaded),
+                        humanbytes(total_length),
+                        humanbytes(speed),
+                        xxLAZY_BAPUXX_estimated_total_time if xxLAZY_BAPUXX_estimated_total_time != '' else "0 s"
+                    )
+                    try:
+                        current_message = tmp
+                        if current_message != display_message:
+                            await bot.edit_message_text(
+                                chat_id,
+                                message_id,
+                                text=current_message,
+                                disable_web_page_preview=True
+                            )
+                            display_message = current_message
+                    except Exception as e:
+                        logger.info(str(e))
+                        pass
+        return await response.release()
