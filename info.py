@@ -44,7 +44,7 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 LAZY_DIVERTING_CHANNEL_ID = environ.get('LAZY_DIVERTING_CHANNEL_ID', '-1002396493940').split()
 # MongoDB information *
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Akumar:abhaykaiwartya2017@akumar.ayyla.mongodb.net/?retryWrites=true&w=majority&appName=Akumar")
+DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Akumar")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
 
