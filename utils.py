@@ -599,4 +599,29 @@ async def verify_user(bot, userid, token):
     today = date.today()
     VERIFIED[user.id] = str(today)
 
-async d
+async def check_verification(bot, userid):
+    user = await bot.get_users(userid)
+    if not await db.is_user_exist(user.id):
+        await db.add_user(user.id, user.first_name)
+        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
+    tz = pytz.timezone('Asia/Kolkata')
+    today = date.today()
+    if user.id in VERIFIED.keys():
+        EXP = VERIFIED[user.id]
+        years, month, day = EXP.split('-')
+        comp = date(int(years), int(month), int(day))
+        if comp<today:
+            return False
+        else:
+            return True
+    else:
+        return False
+    
+
+# Credit @LazyDeveloper.
+# Please Don't remove credit.
+# Born to make history @LazyDeveloper !
+# Thank you LazyDeveloper for helping us in this Journey
+# 🥰  Thank you for giving me credit @LazyDeveloperr  🥰
+# for any error please contact me -> telegram@LazyDeveloperr or insta @LazyDeveloperr 
+# rip paid developers 🤣 - >> No need to buy paid source code while @LazyDeveloperr is here 😍😍
